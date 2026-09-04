@@ -1,5 +1,6 @@
 import psutil
 import sys
+import os
 import time
 import datetime
 import schedule
@@ -26,31 +27,49 @@ def ProcessScan():
 
     return listprocess
 
-def DisplayProcess():
+def CreateLog(FolderName):
     Border = "-"*60
+
+    Ret = False
+
+    Ret = os.path.exists(FolderName)
+    if(Ret == False):
+        os.mkdir(FolderName)
+        print("Directory created successfully")
+
+    timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+
+    FileName = os.path.join(FolderName,"ProcessLog_%s.log"%timestamp)
+
+    fobj = open(FileName,"w")
+
+    fobj.write(Border+"\n")
+    fobj.write("Process Information System\n")
+    fobj.write("Log Created : "+timestamp+"\n")
+    fobj.write(Border+"\n\n")
 
     Data = ProcessScan()
 
-    print(Border)
-    print("Running Process Information")
-    print(Border)
-
     for info in Data:
 
-        print("PID           :",info["pid"])
-        print("Process Name  :",info["name"])
-        print("User Name     :",info["username"])
-        print("Status        :",info["status"])
-        print("CPU Usage     : %.2f %%"%info["cpu_percent"])
-        print("Memory Usage  : %.2f %%"%info["memory_percent"])
-        print("Start Time    : %s\n"%info["start_time"])
-        print(Border)
+        fobj.write("PID            : %s\n"%info["pid"])
+        fobj.write("Process Name   : %s\n"%info["name"])
+        fobj.write("User Name      : %s\n"%info["username"])
+        fobj.write("Status         : %s\n"%info["status"])
+        fobj.write("CPU Usage      : %.2f %%\n"%info["cpu_percent"])
+        fobj.write("Memory Usage   : %.2f %%\n"%info["memory_percent"])
+        fobj.write("Start Time     : %s\n"%info["start_time"])
+        fobj.write(Border+"\n")
 
-    print("---------------------- Processes Ended ---------------------")
-    print(Border)
+    fobj.write("Process Information Finish\n")
+    fobj.write(Border+"\n")
 
-def PlatformSurvillance():
-    DisplayProcess()
+    fobj.close()
+
+    print("Log file created :",FileName)
+
+def PlatformSurvillance(FolderName):
+    CreateLog(FolderName)
 
 def main():
 
@@ -68,14 +87,18 @@ def main():
             print("3. Scheduler Support")
         elif(sys.argv[1]=="--u" or sys.argv[1]=="--U"):
             print("Usage :")
-            print("python ProcInfo.py Time")
+            print("python ProcInfo.py Time FolderName")
             print("Example :")
-            print("python ProcInfo.py 1")
-        else:
-            print("Scheduler Started Successfully")
-            print("Press CTRL+C to Stop")
+            print("python ProcInfo.py 1 ProcessLog")
 
-            schedule.every(int(sys.argv[1])).minutes.do(PlatformSurvillance)
+        else:
+            print("Invalid Argument")
+
+    elif(len(sys.argv)==3):     
+        print("Scheduler Started Successfully")
+        print("Press CTRL+C to Stop")
+
+        schedule.every(int(sys.argv[1])).minutes.do(PlatformSurvillance,sys.argv[2])
 
         while True:
             schedule.run_pending()

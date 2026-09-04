@@ -72,7 +72,7 @@ pip install psutil schedule
 Run the application by providing the monitoring interval in minutes:
 
 ```bash
-python ProcInfo.py 1
+python ProcInfo.py 1 ProcessLog
 ```
 
 The above command schedules process monitoring every **1 minute**.
@@ -80,7 +80,7 @@ The above command schedules process monitoring every **1 minute**.
 For example:
 
 ```bash
-python ProcInfo.py 5
+python ProcInfo.py 5 ProcessLog
 ```
 
 This schedules monitoring every **5 minutes**.
@@ -125,10 +125,10 @@ Example:
 
 ```text
 Usage :
-python ProcInfo.py Time
+python ProcInfo.py Time FolderName
 
 Example :
-python ProcInfo.py 1
+python ProcInfo.py 1 ProcessLog
 ```
 
 ## 📋 Example Output
